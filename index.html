@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Business Cards</title>
+    <style>
+    :root {
+        --primary: #4361ee;
+        --primary-dark: #3a56d4;
+        --secondary: #4895ef;
+        --danger: #f72585;
+        --success: #4CAF50;
+        --warning: #ff9800;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --gray: #6c757d;
+        --border-radius: 10px;
+        --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    /* Notification styles */
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        max-width: 350px;
+        padding: 15px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        animation: slide-in 0.5s ease;
+    }
+
+    .notification.success {
+        background-color: var(--success);
+        color: white;
+    }
+
+    .notification.error {
+        background-color: var(--danger);
+        color: white;
+    }
+
+    .notification.warning {
+        background-color: var(--warning);
+        color: white;
+    }
+
+    .notification-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+
+    .notification.fade-out {
+        opacity: 0;
+        transform: translateX(30px);
+        transition: opacity 0.5s, transform 0.5s;
+    }
+
+    @keyframes slide-in {
+        from {
+            transform: translateX(100px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background-color: #f5f7ff;
+        color: var(--dark);
+        line-height: 1.6;
+    }
+
+    /* تنسيق صفحة التسجيل */
+    #login-container {
+        max-width: 500px;
+        margin: 5% auto;
+        padding: 2.5rem;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        text-align: center;
+    }
+
+    #login-container h2 {
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+    }
+
+    #login-form input {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        margin-bottom: 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+
+    #login-form input:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+
+    #login-form button {
+        width: 100%;
+        padding: 0.8rem;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    #login-form button:hover {
+        background-color: var(--primary-dark);
+    }
+
+    /* تنسيق الواجهة الرئيسية */
+    #app-container {
+        display: none;
+        padding: 2rem;
+    }
+
+    .app-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .app-title {
+        color: var(--primary);
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .logout-btn {
+        padding: 0.5rem 1rem;
+        background-color: var(--danger);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .logout-btn:hover {
+        background-color: #e3176a;
+    }
+
+    /* تنسيق المحتوى الرئيسي */
+    .main-content {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 992px) {
+        .main-content {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* تنسيق قسم إضافة البطاقات */
+    .add-card-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 1rem;
+    }
+
+    .add-card-section h3 {
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        text-align: center;
+        font-size: 1.3rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: var(--border-radius);
+        font-size: 0.95rem;
+        transition: var(--transition);
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .btn {
+        display: block;
+        width: 100%;
+        padding: 0.8rem;
+        margin-top: 1rem;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    /* تنسيق قسم عرض البطاقات */
+    .cards-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+    }
+
+    .cards-section h3 {
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        text-align: center;
+        font-size: 1.3rem;
+    }
+
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.2rem;
+    }
+
+    .card {
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-right: 1rem;
+    }
+
+    .card-header h4 {
+        color: var(--primary);
+        margin: 0;
+        font-size: 1.1rem;
+        flex-grow: 1;
+    }
+
+    .card-body {
+        padding: 1rem;
+        flex-grow: 1;
+    }
+
+    .card p {
+        margin-bottom: 0.8rem;
+        color: var(--gray);
+    }
+
+    .card p strong {
+        color: var(--dark);
+    }
+
+    .specialty-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        background-color: var(--primary);
+        color: white;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+    }
+
+    .portfolio-btn {
+        background-color: var(--secondary);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .portfolio-btn:hover {
+        background-color: #3a7bc8;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 0.8rem;
+        padding: 1rem;
+        border-top: 1px solid #e9ecef;
+        background-color: #f8f9fa;
+    }
+
+    .card-actions button {
+        flex: 1;
+        padding: 0.5rem;
+        border: none;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .card-actions button:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+
+    .edit-btn {
+        background-color: var(--secondary);
+        color: white;
+    }
+
+    .delete-btn {
+        background-color: var(--danger);
+        color: white;
+    }
+
+    /* حالات التحميل والرسائل */
+    .loading {
+        text-align: center;
+        padding: 2rem;
+        color: var(--gray);
+        font-size: 1.1rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--gray);
+    }
+
+    .empty-state p {
+        margin-top: 1rem;
+    }
+</style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+</head>
+<body>
+    <div id="login-container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+    <div id="app-container" style="display: none;">
+        <button id="logout-btn" onclick="logout()">Logout</button>
+        <div class="container">
+            <div class="right">
+                <h3 id="formTitle">Add New Card</h3>
+                <input type="hidden" id="editCardId">
+                <input type="text" id="name" placeholder="Name | الاسم" required>
+                <input type="tel" id="phone" placeholder="Phone | الهاتف" required>
+                <input type="url" id="website" placeholder="Website | الموقع">
+                <select id="specialty" required>
+                    <option value="" disabled selected>Select Specialty | اختر التخصص</option>
+                    <option value="ContentWriter">Content Writer | كاتب محتوى</option>
+                    <option value="GraphicDesigner">Graphic Designer | مصمم جرافيك</option>
+                    <option value="WebDesigner">Web Designer | مصمم مواقع</option>
+                    <option value="SalesManager">Sales Manager | مدير مبيعات</option>
+                    <option value="VideoEditor">Video Editor | تعديل فديوهات</option>
+                    <option value="Marketer">Marketer | مسوق</option>
+                </select>
+                <textarea id="about" placeholder="About | نبذة" rows="3" required></textarea>
+                <div class="button-group">
+                    <button id="saveButton" onclick="saveCard()">Add Card</button>
+                    <button id="cancelButton" onclick="cancelEdit()" style="display:none; background-color: #f44336;">Cancel</button>
+                </div>
+            </div>
+            <div class="left">
+                <h3> البحث عن الاعضاء </h3>
+                <div class="search-section">
+                    <input type="text" id="searchInput" placeholder=" ابحث عن  التخصص..." oninput="filterCards()" />
+                </div>
+                <div class="filter-section">
+                    <label for="specialtyFilter">Filter by Specialty | تصفية حسب التخصص</label>
+                    <select id="specialtyFilter" onchange="filterCards()">
+                        <option value="">All Specialties | جميع التخصصات</option>
+                        <option value="ContentWriter">Content Writer | كاتب محتوى</option>
+                        <option value="GraphicDesigner">Graphic Designer | مصمم جرافيك</option>
+                        <option value="WebDesigner">Web Designer | مصمم مواقع</option>
+                        <option value="SalesManager">Sales Manager | مدير مبيعات</option>
+                        <option value="VideoEditor">Video Editor | تعديل فديوهات</option>
+                        <option value="Marketer">Marketer | مسوق</option>
+                    </select>
+                </div>
+                <div id="cardsContainer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_iGofl6_nNdSFcjFgR2rWvxDqkPwkLG4",
+            authDomain: "business-7c5c4.firebaseapp.com",
+            projectId: "business-7c5c4",
+            storageBucket: "business-7c5c4.firebasestorage.app",
+            messagingSenderId: "48603673777",
+            appId: "1:48603673777:web:c07637ad7a25eb33bf5e90",
+            measurementId: "G-DV203G2PDN"
+
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Authentication state observer
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                showAppUI();
+                loadCards();
+            } else {
+                showLoginUI();
+            }
+        });
+
+        // Show application UI
+        function showAppUI() {
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+        }
+
+        // Show login UI
+        function showLoginUI() {
+            document.getElementById('login-container').style.display = 'block';
+            document.getElementById('app-container').style.display = 'none';
+        }
+
+        // Login form submission
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .catch((error) => {
+                    alert("Login failed: " + error.message);
+                });
+        });
+
+        // Logout function
+        function logout() {
+            auth.signOut().catch(error => {
+                alert("Logout failed: " + error.message);
+            });
+        }
+
+        // Save card (add new or update existing)
+        function saveCard() {
+            const cardId = document.getElementById('editCardId').value;
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const website = document.getElementById('website').value.trim();
+            const about = document.getElementById('about').value.trim();
+
+            if (!name || !phone || !about) {
+                showNotification("Please fill all required fields.", "error");
+                return;
+            }
+
+            // Validate website URL if provided
+            if (website && !isValidUrl(website)) {
+                showNotification("Please enter a valid website URL (e.g., https://example.com)", "error");
+                return;
+            }
+
+            const specialty = document.getElementById('specialty').value.trim();
+
+            if (!specialty) {
+                showNotification("Please select a specialty.", "error");
+                return;
+            }
+
+            const cardData = {
+                name: name,
+                phone: phone,
+                website: website,
+                about: about,
+                specialty: specialty,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            // If cardId exists, update the card, otherwise add a new one
+            let promise;
+            if (cardId) {
+                promise = db.collection("cards").doc(cardId).update(cardData)
+                    .then(() => {
+                        showNotification("Card updated successfully!", "success");
+                    });
+            } else {
+                promise = db.collection("cards").add(cardData)
+                    .then(() => {
+                        showNotification("Card added successfully!", "success");
+                    });
+            }
+
+            promise
+                .then(() => {
+                    // Reset form and reload cards
+                    resetForm();
+                    loadCards();
+                })
+                .catch((error) => {
+                    showNotification("Error: " + error.message, "error");
+                });
+        }
+
+        // Reset form to add mode
+        function resetForm() {
+            document.getElementById('formTitle').textContent = 'Add New Card';
+            document.getElementById('saveButton').textContent = 'Add Card';
+            document.getElementById('editCardId').value = '';
+            document.getElementById('name').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('website').value = '';
+            document.getElementById('specialty').value = '';
+            document.getElementById('about').value = '';
+            document.getElementById('cancelButton').style.display = 'none';
+        }
+
+        // Cancel edit mode
+        function cancelEdit() {
+            resetForm();
+        }
+
+        // Show notification instead of alert
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span>${message}</span>
+                    <button class="close-btn" onclick="this.parentElement.parentElement.remove()">×</button>
+                </div>
+            `;
+
+            // Add to document
+            document.body.appendChild(notification);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.classList.add('fade-out');
+                    setTimeout(() => notification.remove(), 500);
+                }
+            }, 5000);
+        }
+
+        // URL validation helper
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        // استبدل دالة loadCards والدوال الخاصة بالعرض بالآتي:
+// Load cards from Firebase
+let allCardsData = []; // لتخزين كل البطاقات
+
+function loadCards() {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = '<div class="loading">جاري تحميل البطاقات...</div>';
+
+    db.collection("cards").orderBy("timestamp", "desc").get()
+        .then((querySnapshot) => {
+            if (querySnapshot.empty) {
+                cardsContainer.innerHTML = '<div class="empty-state">لا توجد بطاقات مضافة</div>';
+                allCardsData = [];
+                return;
+            }
+            allCardsData = [];
+            querySnapshot.forEach((doc) => {
+                const card = doc.data();
+                allCardsData.push({...card, cardId: doc.id});
+            });
+            filterCards(); // لعرض وتصفية البطاقات
+        })
+        .catch((error) => {
+            cardsContainer.innerHTML = `<div class="error">خطأ في تحميل البطاقات: ${error.message}</div>`;
+        });
+}
+
+// Function to get Arabic translation for specialty
+function getSpecialtyArabicName(specialtyValue) {
+    const specialtyMap = {
+        'ContentWriter': 'كاتب محتوى',
+        'GraphicDesigner': 'مصمم جرافيك',
+        'WebDesigner': 'مصمم مواقع',
+        'SalesManager': 'مدير مبيعات',
+        'VideoEditor': 'تعديل فديوهات',
+        'Marketer': 'مسوق'
+    };
+    return specialtyMap[specialtyValue] || specialtyValue || 'غير محدد';
+}
+
+// Get random avatar color
+function getAvatarColor(name) {
+    const colors = ['#4361ee', '#3a0ca3', '#f72585', '#4895ef', '#4cc9f0', '#560bad', '#7209b7', '#b5179e'];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+}
+
+// دالة تصفية البطاقات حسب البحث والتخصص
+function filterCards() {
+    const searchValue = document.getElementById('searchInput').value.trim().toLowerCase();
+    const specialtyValue = document.getElementById('specialtyFilter').value;
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = '';
+
+    // Filter by search text and specialty
+    const filtered = allCardsData.filter(card => {
+        // Get Arabic specialty name for search
+        const specialtyArabic = getSpecialtyArabicName(card.specialty).toLowerCase();
+
+        // Text search match
+        const textMatch = 
+            card.name.toLowerCase().includes(searchValue) ||
+            card.phone.includes(searchValue) ||
+            (card.about && card.about.toLowerCase().includes(searchValue)) ||
+            (card.specialty && card.specialty.toLowerCase().includes(searchValue)) ||
+            specialtyArabic.includes(searchValue);
+
+        // Specialty match (if specialty filter is selected)
+        const specialtyMatch = !specialtyValue || (card.specialty === specialtyValue);
+
+        // Card matches if both text and specialty conditions are met
+        return textMatch && specialtyMatch;
+    });
+    if (filtered.length === 0) {
+        cardsContainer.innerHTML = '<div class="empty-state">لا توجد بطاقات مطابقة</div>';
+        return;
+    }
+    filtered.forEach(card => {
+        const cardElement = document.createElement('div');
+        const specialtyClass = card.specialty ? card.specialty.toLowerCase() : 'other';
+        const specialtyArabic = getSpecialtyArabicName(card.specialty);
+        const avatarColor = getAvatarColor(card.name);
+        const initials = card.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+
+        cardElement.className = `card ${specialtyClass}`;
+        cardElement.innerHTML = `
+            <div class="card-header">
+                <div class="avatar" style="background-color: ${avatarColor};">${initials}</div>
+                <h4>${card.name}</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>الهاتف:</strong> ${card.phone}</p>
+                ${card.website ? `<p><strong>الموقع:</strong> <button class="portfolio-btn" onclick="window.open('${card.website}', '_blank')">معرض الاعمال</button></p>` : ''}
+                <p><strong>التخصص:</strong> <span class="specialty-badge ${card.specialty ? card.specialty.toLowerCase() : ''}">${specialtyArabic}</span></p>
+                <p><strong>نبذة:</strong> ${card.about}</p>
+            </div>
+            <div class="card-actions">
+                <button class="edit-btn" onclick="editCard('${card.cardId}')">تعديل</button>
+                <button class="delete-btn" onclick="removeCard('${card.cardId}')">حذف</button>
+            </div>
+        `;
+        cardsContainer.appendChild(cardElement);
+    });
+}
+
+// Edit card function
+function editCard(cardId) {
+    // Find the card in allCardsData
+    const card = allCardsData.find(card => card.cardId === cardId);
+    if (!card) {
+        showNotification("Card not found!", "error");
+        return;
+    }
+
+    // Scroll to the form
+    document.querySelector('.right').scrollIntoView({ behavior: 'smooth' });
+
+    // Set form to edit mode
+    document.getElementById('formTitle').textContent = 'Edit Card';
+    document.getElementById('saveButton').textContent = 'Update Card';
+    document.getElementById('cancelButton').style.display = 'inline-block';
+
+    // Populate form fields
+    document.getElementById('editCardId').value = cardId;
+    document.getElementById('name').value = card.name || '';
+    document.getElementById('phone').value = card.phone || '';
+    document.getElementById('website').value = card.website || '';
+    document.getElementById('specialty').value = card.specialty || '';
+    document.getElementById('about').value = card.about || '';
+}
+
+// Remove card function
+function removeCard(cardId) {
+    // Confirm before deleting
+    if (!confirm("Are you sure you want to delete this card?")) {
+        return;
+    }
+
+    // Delete the card from Firestore
+    db.collection("cards").doc(cardId).delete()
+    .then(() => {
+        showNotification("Card deleted successfully!", "success");
+        loadCards(); // Reload cards to show the updated list
+    })
+    .catch((error) => {
+        showNotification("Error deleting card: " + error.message, "error");
+    });
+}
+    </script>
+</body>
+</html>
